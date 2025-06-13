@@ -1,0 +1,25 @@
+{% extends "base.html" %}
+
+{% block title %}Generate Link for {{ file.original_name }}{% endblock %}
+
+{% block content %}
+<div class="form-container">
+    <h2 class="mb-4">Generate Share Link</h2>
+    
+    <div class="card mb-4">
+        <div class="card-body">
+            <h5 class="card-title">{{ file.original_name }}</h5>
+            <p class="card-text">
+                This link will be valid for 12 hours and can be shared with anyone.
+            </p>
+        </div>
+    </div>
+    
+    <form method="POST" action="{{ url_for('generate_download_link', file_id=file.id) }}">
+        {{ form.hidden_tag() }}
+        <div class="d-grid">
+            {{ form.submit(class="btn btn-primary") }}
+        </div>
+    </form>
+</div>
+{% endblock %}

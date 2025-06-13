@@ -1,0 +1,11 @@
+{% extends "base.html" %}
+
+{% block title %}Gone{% endblock %}
+
+{% block content %}
+<div class="text-center">
+    <h1 class="display-1 text-danger">410</h1>
+    <p class="lead">This resource is no longer available.</p>
+    <a href="{{ url_for('index') }}" class="btn btn-primary">Go Home</a>
+</div>
+{% endblock %}

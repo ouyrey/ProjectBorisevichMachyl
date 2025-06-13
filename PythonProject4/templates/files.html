@@ -1,0 +1,69 @@
+{% extends "base.html" %}
+
+{% block title %}Admin - Files{% endblock %}
+
+{% block content %}
+<div class="container">
+    <h2 class="mb-4">File Management</h2>
+    
+    <div class="card mb-4">
+        <div class="card-header bg-primary text-white">
+            <div class="d-flex justify-content-between align-items-center">
+                <span>All Files ({{ files|length }})</span>
+                <form class="d-flex" method="GET" action="{{ url_for('admin_files') }}">
+                    <input class="form-control me-2" type="search" name="q" placeholder="Search files..." value="{{ request.args.get('q', '') }}">
+                    <button class="btn btn-light" type="submit">Search</button>
+                </form>
+            </div>
+        </div>
+        
+        <div class="table-responsive">
+            <table class="table table-hover">
+                <thead class="table-light">
+                    <tr>
+                        <th>ID</th>
+                        <th>File Name</th>
+                        <th>Owner</th>
+                        <th>Size</th>
+                        <th>Uploaded</th>
+                        <th>Links</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for file in files %}
+                    <tr>
+                        <td>{{ file.id }}</td>
+                        <td>
+                            <strong>{{ file.original_name }}</strong>
+                            {% if file.description %}<br><small class="text-muted">{{ file.description|truncate(50) }}</small>{% endif %}
+                        </td>
+                        <td>
+                            <a href="{{ url_for('admin_user_files', user_id=file.owner.id) }}" 
+                               class="text-decoration-none">
+                                {{ file.owner.username }}
+                            </a>
+                        </td>
+                        <td>{{ file.size|filesizeformat }}</td>
+                        <td>{{ file.upload_date.strftime('%Y-%m-%d') }}</td>
+                        <td>{{ file.download_links|length }}</td>
+                        <td>
+                            <a href="{{ url_for('view_file', file_id=file.id) }}" 
+                               class="btn btn-sm btn-outline-primary"
+                               title="View details">
+                                <i class="bi bi-eye"></i>
+                            </a>
+                            <a href="{{ url_for('admin_file_links', file_id=file.id) }}" 
+                               class="btn btn-sm btn-outline-info"
+                               title="View links">
+                                <i class="bi bi-link-45deg"></i>
+                            </a>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}

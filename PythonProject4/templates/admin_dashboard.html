@@ -1,0 +1,175 @@
+[file name]: admin_dashboard.html
+[file content begin]
+{% extends "base.html" %}
+
+{% block title %}Admin Dashboard{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2 class="mb-0">
+            <i class="bi bi-speedometer2 me-2"></i>Admin Dashboard
+        </h2>
+        <div>
+            <a href="{{ url_for('admin_users') }}" class="btn btn-outline-primary me-2">
+                <i class="bi bi-people-fill"></i> Users
+            </a>
+            <a href="{{ url_for('admin_files') }}" class="btn btn-outline-primary me-2">
+                <i class="bi bi-folder-fill"></i> Files
+            </a>
+            <a href="{{ url_for('admin_links') }}" class="btn btn-outline-primary">
+                <i class="bi bi-link-45deg"></i> Links
+            </a>
+        </div>
+    </div>
+
+    <div class="row mb-4 g-4">
+        <div class="col-md-4">
+            <div class="card h-100 border-primary">
+                <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
+                    <h5 class="mb-0"><i class="bi bi-people"></i> Users</h5>
+                    <span class="badge bg-light text-primary">{{ users_count }}</span>
+                </div>
+                <div class="card-body">
+                    <div class="d-flex align-items-center mb-3">
+                        <div class="bg-primary bg-opacity-10 p-2 rounded me-3">
+                            <i class="bi bi-person-plus fs-4 text-primary"></i>
+                        </div>
+                        <div>
+                            <h6 class="mb-0">New this week</h6>
+                            <p class="mb-0 fs-5 fw-bold">{{ new_users_7d }}</p>
+                        </div>
+                    </div>
+                    <a href="{{ url_for('admin_users') }}" class="btn btn-primary w-100">
+                        <i class="bi bi-arrow-right"></i> Manage Users
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-4">
+            <div class="card h-100 border-primary">
+                <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
+                    <h5 class="mb-0"><i class="bi bi-files"></i> Files</h5>
+                    <span class="badge bg-light text-primary">{{ files_count }}</span>
+                </div>
+                <div class="card-body">
+                    <div class="d-flex align-items-center mb-3">
+                        <div class="bg-primary bg-opacity-10 p-2 rounded me-3">
+                            <i class="bi bi-cloud-arrow-up fs-4 text-primary"></i>
+                        </div>
+                        <div>
+                            <h6 class="mb-0">Last 30 days</h6>
+                            <p class="mb-0 fs-5 fw-bold">{{ files_30d }}</p>
+                        </div>
+                    </div>
+                    <a href="{{ url_for('admin_files') }}" class="btn btn-primary w-100">
+                        <i class="bi bi-arrow-right"></i> Manage Files
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-4">
+            <div class="card h-100 border-primary">
+                <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
+                    <h5 class="mb-0"><i class="bi bi-link-45deg"></i> Links</h5>
+                    <span class="badge bg-light text-primary">{{ links_count }}</span>
+                </div>
+                <div class="card-body">
+                    <div class="d-flex align-items-center mb-3">
+                        <div class="bg-primary bg-opacity-10 p-2 rounded me-3">
+                            <i class="bi bi-share fs-4 text-primary"></i>
+                        </div>
+                        <div>
+                            <h6 class="mb-0">Active links</h6>
+                            <p class="mb-0 fs-5 fw-bold">{{ active_links }}</p>
+                        </div>
+                    </div>
+                    <a href="{{ url_for('admin_links') }}" class="btn btn-primary w-100">
+                        <i class="bi bi-arrow-right"></i> Manage Links
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row mt-4">
+        <div class="col-md-6 mb-4">
+            <div class="card h-100">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="mb-0"><i class="bi bi-clock-history me-2"></i>Recent Activity</h5>
+                </div>
+                <div class="card-body">
+                    {% if recent_activity %}
+                    <div class="list-group list-group-flush">
+                        {% for activity in recent_activity %}
+                        <div class="list-group-item">
+                            <div class="d-flex w-100 justify-content-between">
+                                <h6 class="mb-1">{{ activity.action }}</h6>
+                                <small>{{ activity.timestamp|time_ago }}</small>
+                            </div>
+                            <p class="mb-1 small">{{ activity.details }}</p>
+                            <small class="text-muted">By {{ activity.user.username }}</small>
+                        </div>
+                        {% endfor %}
+                    </div>
+                    {% else %}
+                    <div class="text-center py-4">
+                        <i class="bi bi-clock-history fs-1 text-muted"></i>
+                        <p class="text-muted mt-2">No recent activity</p>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-6 mb-4">
+            <div class="card h-100">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="mb-0"><i class="bi bi-graph-up me-2"></i>Statistics</h5>
+                </div>
+                <div class="card-body">
+                    <div class="mb-4">
+                        <h6>Files Uploaded (Last 30 days)</h6>
+                        <div class="progress" style="height: 25px;">
+                            <div class="progress-bar bg-success progress-bar-striped" role="progressbar" 
+                                 style="width: {{ files_30d_percent }}%" 
+                                 aria-valuenow="{{ files_30d_percent }}" 
+                                 aria-valuemin="0" 
+                                 aria-valuemax="100">
+                                {{ files_30d }} files ({{ files_30d_percent|round(1) }}%)
+                            </div>
+                        </div>
+                    </div>
+                    <div class="mb-4">
+                        <h6>Storage Usage</h6>
+                        <div class="progress" style="height: 25px;">
+                            <div class="progress-bar bg-info progress-bar-striped" role="progressbar" 
+                                 style="width: {{ storage_percent }}%" 
+                                 aria-valuenow="{{ storage_percent }}" 
+                                 aria-valuemin="0" 
+                                 aria-valuemax="100">
+                                {{ total_size|filesizeformat }} ({{ storage_percent|round(1) }}%)
+                            </div>
+                        </div>
+                    </div>
+                    <div class="mb-2">
+                        <h6>Active Links</h6>
+                        <div class="progress" style="height: 25px;">
+                            <div class="progress-bar bg-warning progress-bar-striped" role="progressbar" 
+                                 style="width: {{ active_links_percent }}%" 
+                                 aria-valuenow="{{ active_links_percent }}" 
+                                 aria-valuemin="0" 
+                                 aria-valuemax="100">
+                                {{ active_links }} active ({{ active_links_percent|round(1) }}%)
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+[file content end]

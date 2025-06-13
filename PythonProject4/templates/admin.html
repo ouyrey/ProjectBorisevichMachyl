@@ -1,0 +1,83 @@
+{% extends "base.html" %}
+
+{% block title %}Admin - Users{% endblock %}
+
+{% block content %}
+<div class="container">
+    <h2 class="mb-4">User Management</h2>
+    
+    <div class="card mb-4">
+        <div class="card-header bg-primary text-white">
+            <div class="d-flex justify-content-between align-items-center">
+                <span>All Users ({{ users|length }})</span>
+                <form class="d-flex" method="GET" action="{{ url_for('admin_users') }}">
+                    <input class="form-control me-2" type="search" name="q" placeholder="Search users..." value="{{ request.args.get('q', '') }}">
+                    <button class="btn btn-light" type="submit">Search</button>
+                </form>
+            </div>
+        </div>
+        
+        <div class="table-responsive">
+            <table class="table table-hover">
+                <thead class="table-light">
+                    <tr>
+                        <th>ID</th>
+                        <th>Username</th>
+                        <th>Email</th>
+                        <th>Role</th>
+                        <th>Files</th>
+                        <th>Registered</th>
+                        <th>Last Login</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for user in users %}
+                    <tr>
+                        <td>{{ user.id }}</td>
+                        <td>
+                            <strong>{{ user.username }}</strong>
+                            {% if user.full_name %}<br><small>{{ user.full_name }}</small>{% endif %}
+                        </td>
+                        <td>{{ user.email }}</td>
+                        <td>
+                            <span class="badge bg-{% if user.role == 'admin' %}danger{% else %}primary{% endif %}">
+                                {{ user.role }}
+                            </span>
+                        </td>
+                        <td>{{ user.files|length }}</td>
+                        <td>{{ user.registered_on.strftime('%Y-%m-%d') }}</td>
+                        <td>
+                            {% if user.last_login %}
+                                {{ user.last_login.strftime('%Y-%m-%d %H:%M') }}
+                            {% else %}
+                                <span class="text-muted">Never</span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            <!-- Добавленная кнопка просмотра файлов -->
+                            <a href="{{ url_for('admin_user_files', user_id=user.id) }}" 
+                               class="btn btn-sm btn-primary"
+                               title="View files">
+                                <i class="bi bi-folder"></i> Files
+                            </a>
+                            <button class="btn btn-sm btn-outline-secondary" 
+                                    data-bs-toggle="modal" 
+                                    data-bs-target="#userDetails{{ user.id }}"
+                                    title="View details">
+                                <i class="bi bi-info-circle"></i>
+                            </button>
+                        </td>
+                    </tr>
+                    
+                    <!-- Модальное окно с деталями пользователя (остаётся без изменений) -->
+                    <div class="modal fade" id="userDetails{{ user.id }}" tabindex="-1">
+                        <!-- ... существующий код модального окна ... -->
+                    </div>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}
